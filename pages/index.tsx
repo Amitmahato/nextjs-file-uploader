@@ -1,20 +1,5 @@
-// import React from "react";
-// import { Upload } from "antd";
-
-// interface uploaderProps {}
-
-// const Uploader: React.FC<uploaderProps> = () => {
-//   return (
-//     <div>
-//       <Upload listType="picture-card">Upload</Upload>
-//     </div>
-//   );
-// };
-
-// export default Uploader;
-
 import React from "react";
-import { Button, Modal, Upload } from "antd";
+import { Button, message, Modal, Spin, Upload } from "antd";
 import axios from "axios";
 import Layout from "antd/lib/layout/layout";
 import API from "./api";
@@ -24,6 +9,7 @@ interface uploaderProps {}
 const Uploader: React.FC<uploaderProps> = () => {
   const [imgUrl, setImgUrl] = React.useState(null);
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   return (
     <Layout>
       <div
@@ -36,17 +22,40 @@ const Uploader: React.FC<uploaderProps> = () => {
           alignItems: "center",
         }}
       >
-        {imgUrl && <img src={imgUrl} alt="Image uploaded" />}
-        <Button onClick={() => setOpen(true)}>Upload</Button>
+        {imgUrl && (
+          <img
+            style={{
+              height: "70%",
+              marginBottom: 20,
+            }}
+            src={imgUrl}
+            alt="Image uploaded"
+          />
+        )}
+        <div>
+          <Button
+            style={{ marginRight: 10 }}
+            onClick={async () => {
+              await API.get("/ping").then((res) => {
+                message.success("Ping Response : " + res.data?.message);
+              });
+            }}
+          >
+            Ping
+          </Button>
+          <Button onClick={() => setOpen(true)}>Upload</Button>
+        </div>
         <Modal
           visible={open}
           onCancel={() => setOpen(false)}
           onOk={() => setOpen(false)}
         >
           <Upload
+            disabled={loading}
             name="file"
             multiple={false}
             onChange={async (val) => {
+              setLoading(true);
               const { file } = val;
               console.log(val);
               const formData = new FormData();
@@ -58,23 +67,29 @@ const Uploader: React.FC<uploaderProps> = () => {
                   .post("http://localhost:8000/upload", formData)
                   .then((res) => {
                     setImgUrl(res.data.url);
+                    setOpen(false);
+                    setLoading(false);
                   });
 
-                // 2. this will work; to make it work server must set Access-Control-Allow-Origin in response header to include http://localhost:3001 (origin)
-                await API.post("/upload", formData).then((res) => {
-                  setImgUrl(res.data.url);
-                });
+                // // 2. this will work; to make it work server must set Access-Control-Allow-Origin in response header to include http://localhost:3001 (origin)
+                // await API.post("/upload", formData).then((res) => {
+                //   setImgUrl(res.data.url);
+                //   setOpen(false);
+                //   setLoading(false);
+                // });
 
-                // 3. this will not work - request forwarding through API routes
-                await axios.post("api/upload", formData).then((res) => {
-                  setImgUrl(res.data.url);
-                });
+                // // 3. this will not work - request forwarding through API routes
+                // await axios.post("api/upload", formData).then((res) => {
+                //   setImgUrl(res.data.url);
+                //   setOpen(false);
+                //   setLoading(false);
+                // });
               }
             }}
             listType="picture-card"
             maxCount={1}
           >
-            Upload
+            {loading ? <Spin spinning={loading} size="large" /> : "Upload"}
           </Upload>
         </Modal>
       </div>
