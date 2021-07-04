@@ -69,6 +69,10 @@ const Uploader: React.FC<uploaderProps> = () => {
                     setImgUrl(res.data.url);
                     setOpen(false);
                     setLoading(false);
+                  })
+                  .catch((err) => {
+                    console.log("Error : ", err);
+                    setLoading(false);
                   });
 
                 // // 2. this will work; to make it work server must set Access-Control-Allow-Origin in response header to include http://localhost:3001 (origin)
@@ -84,6 +88,8 @@ const Uploader: React.FC<uploaderProps> = () => {
                 //   setOpen(false);
                 //   setLoading(false);
                 // });
+              } else if (file.status === "removed") {
+                setLoading(false);
               }
             }}
             listType="picture-card"
