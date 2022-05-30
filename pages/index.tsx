@@ -3,6 +3,7 @@ import { Button, message, Modal, Spin, Upload } from "antd";
 import axios from "axios";
 import Layout from "antd/lib/layout/layout";
 import API from "./api";
+import Image from "next/image";
 
 interface uploaderProps {}
 
@@ -23,14 +24,23 @@ const Uploader: React.FC<uploaderProps> = () => {
         }}
       >
         {imgUrl && (
-          <img
+          <div
             style={{
-              height: "70%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "50%",
+              width: "50%",
               marginBottom: 20,
             }}
-            src={imgUrl}
-            alt="Image uploaded"
-          />
+          >
+            <Image
+              height="100%"
+              width="100%"
+              src={imgUrl}
+              alt="Image uploaded"
+            />
+          </div>
         )}
         <div>
           <Button
