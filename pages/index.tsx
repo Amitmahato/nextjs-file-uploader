@@ -67,30 +67,29 @@ const Uploader: React.FC<uploaderProps> = () => {
             onChange={async (val) => {
               setLoading(true);
               const { file } = val;
-              console.log(val);
               const formData = new FormData();
               formData.append("file", file.originFileObj, file.name);
               if (file.status === "done") {
                 // Follow the network request in console to verify that third request to upload will cause internal server error
-                // 1. this will work; to make it work server must set Access-Control-Allow-Origin in response header to include http://localhost:3001 (origin)
-                await axios
-                  .post("http://localhost:8000/upload", formData)
-                  .then((res) => {
-                    setImgUrl(res.data.url);
-                    setOpen(false);
-                    setLoading(false);
-                  })
-                  .catch((err) => {
-                    console.log("Error : ", err);
-                    setLoading(false);
-                  });
+                // 1. this will work; to make it work server must set Access-Control-Allow-Origin in response header to include http://localhost:3000 (origin)
+                // await axios
+                //   .post("http://localhost:8000/upload", formData)
+                //   .then((res) => {
+                //     setImgUrl(res.data.url);
+                //     setOpen(false);
+                //     setLoading(false);
+                //   })
+                //   .catch((err) => {
+                //     console.log("Error : ", err);
+                //     setLoading(false);
+                //   });
 
-                // // 2. this will work; to make it work server must set Access-Control-Allow-Origin in response header to include http://localhost:3001 (origin)
-                // await API.post("/upload", formData).then((res) => {
-                //   setImgUrl(res.data.url);
-                //   setOpen(false);
-                //   setLoading(false);
-                // });
+                // // 2. this will work; to make it work server must set Access-Control-Allow-Origin in response header to include http://localhost:3000 (origin)
+                await API.post("/upload", formData).then((res) => {
+                  setImgUrl(res.data.url);
+                  setOpen(false);
+                  setLoading(false);
+                });
 
                 // // 3. this will not work - request forwarding through API routes
                 // await axios.post("api/upload", formData).then((res) => {
